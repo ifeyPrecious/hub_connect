@@ -24,14 +24,35 @@ include('./server/connection.php');
 session_start();
 
 // Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
-}
+// if (!isset($_SESSION['user_id'])) {
+//     header('Location: login.php');
+//     exit;
+// }
 
-$user_id = $_SESSION['user_id'];
+// $user_id = $_SESSION['user_id'];
+// $username = $_SESSION['user_name'];
+
+// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
+//     // Handle file upload
+//     $upload_folder = './assets/images/';
+//     $file_name = $_FILES['image']['name'];
+//     $file_tmp = $_FILES['image']['tmp_name'];
+//     move_uploaded_file($file_tmp, $upload_folder . $file_name);
+//     $image_path = $upload_folder . $file_name;
+
+//     // Get post content from the form
+//     $post_content = $_POST['post_content'];
+
+//     // Insert post data into the posts table
+//     $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image) VALUES (?, ?, ?)");
+//     $stmt->bind_param('iss', $user_id, $post_content, $image_path);
+//     $stmt->execute();
+// }
+
+$user_id =  $_SESSION['user_id'];
 $username = $_SESSION['user_name'];
 
+// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
     // Handle file upload
     $upload_folder = './assets/images/';
@@ -46,11 +67,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
     // Insert post data into the posts table
     $stmt = $conn->prepare("INSERT INTO posts (user_id, content, image) VALUES (?, ?, ?)");
     $stmt->bind_param('iss', $user_id, $post_content, $image_path);
-    $stmt->execute();
+
+    if ($stmt->execute()) {
+        // Redirect to avoid form re-submission on refresh
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
 }
 
+// Fetch the latest posts
+$stmt_select = $conn->prepare("SELECT * FROM posts WHERE user_id = ?");
+$stmt_select->bind_param('i', $user_id);
+$stmt_select->execute();
+$result = $stmt_select->get_result();
+$posts = $result->fetch_all(MYSQLI_ASSOC);
+
+ 
 
 ?>
+ 
 
  
 
@@ -224,30 +259,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
                     <input type="text"  placeholder="What's on your mind <?php echo $username?> " name="post_content" id="create-post"> 
                     <input type="file" name="image" accept="image/*">
                     <input type="submit" value="Post" name="post" class="btn btn-primary">
+                   
                 </form>
 
 
 
                 <div class="feeds">
+
+                    
+                <?php if (!empty($posts)) { ?>
+    <?php foreach ($posts as $post) { ?>
+
                     <div class="feed">
                         <div class="head">
-                            
+                        <p><?php echo $post['content']; ?></p>
                         </div>
-                         <div class="user">
-                             <div class="profile-pic">
-                                 <img src="images/profile-14.jpg" alt="">
-                             </div>
-                             <div class="info">
-                                 <h3>Lana Rose</h3>
-                                 <small>Dubai, 15 MINUTES AGO</small>
-                             </div >
-                             <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                         </div>
+                        <div class="user">
+                        <?php if (!empty($post['image'])) { ?>
+                            <div class="profile-pic">
+                                <img src="<?php echo $post['image']; ?>" class="img_size"  alt="image">
+                            </div>
+                            <?php } ?>
+                            <div class="info">
+                                <h3><?php echo $username ?></h3>
+                                <small><?php ?></small>
+                            </div>
+                            <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
+                        </div>
+                         
+                                <div class="photo">   
 
-                         <div class="photo">
-                             <img src="images/feed-1.jpg" alt="">
-                         </div>
-
+                                        <img src="<?php echo $post['image']; ?>" width="10" alt="Post Image">
+                                </div>
                          <div class="action-button">
                              <div class="interaction-button">
                                  <!-- <span><i class="uil uil-thumbs-up"></i></span>
@@ -267,188 +310,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
                          </div>
 
                          <div class="caption">
-                             <p><b>Lana Rose</b>Lorem ipsum dolor storiesquiquam eius.
+                        
                             <span class="hash-tag">#lifestyle</span></p>
                          </div>
                          <div class="comments text-muted">  <!-- View all 130 comments    --></div>
                     </div>
-                
-                    <div class="feed">
-                        <div class="head">
-                            
-                        </div>
-                         <div class="user">
-                             <div class="profile-pic">
-                                 <img src="images/profile-15.jpg" alt="">
-                             </div>
-                             <div class="info">
-                                 <h3>Chris Brown</h3>
-                                 <small>New York, 1 HOUR AGO</small>
-                             </div >
-                             <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                         </div>
 
-                         <div class="photo">
-                             <img src="images/feed-2.jpg" alt="">
-                         </div>
 
-                         <div class="action-button">
-                             <div class="interaction-button">
-                                 <span><i class="uil uil-thumbs-up"></i></span>
-                                 <span><i class="uil uil-comment"></i></span>
-                                 <span><i class="uil uil-share"></i></span>
-                             </div>
-                             <div class="bookmark">
-                                 <span><i class="uil uil-bookmark"></i></span>
-                             </div>
-                         </div>
+                    <?php } ?>
+<?php } ?>
 
-                         <div class="liked-by">
-                             <span><img src="images/profile-2.jpg"></span>
-                             <span><img src="images/profile-4.jpg"></span>
-                             <span><img src="images/profile-6.jpg"></span>
-                             ,<p>Liked by <b>Enrest Achiever</b>snd <b>188 others</b></p>
-                         </div>
 
-                         <div class="caption">
-                             <p><b>Chirs Brown</b>Lorem ipsum dolor storiesquiquam eius.
-                            <span class="hash-tag">#lifestyle</span></p>
-                         </div>
-                         <div class="comments text-muted">View all 40 comments</div>
-                    </div>
-                
-                    <div class="feed">
-                        <div class="head">
-                            
-                        </div>
-                         <div class="user">
-                             <div class="profile-pic">
-                                 <img src="images/profile-16.jpg" alt="">
-                             </div>
-                             <div class="info">
-                                 <h3>John Samron</h3>
-                                 <small>Amsterdam, 7 HOURS AGO</small>
-                             </div >
-                             <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                         </div>
-
-                         <div class="photo">
-                             <img src="images/feed-3.jpg" alt="">
-                         </div>
-
-                         <div class="action-button">
-                             <div class="interaction-button">
-                                 <span><i class="uil uil-thumbs-up"></i></span>
-                                 <span><i class="uil uil-comment"></i></span>
-                                 <span><i class="uil uil-share"></i></span>
-                             </div>
-                             <div class="bookmark">
-                                 <span><i class="uil uil-bookmark"></i></span>
-                             </div>
-                         </div>
-
-                         <div class="liked-by">
-                             <span><img src="images/profile-3.jpg"></span>
-                             <span><img src="images/profile-5.jpg"></span>
-                             <span><img src="images/profile-7.jpg"></span>
-                             ,<p>Liked by <b>Enrest Achiever</b>snd <b>130 others</b></p>
-                         </div>
-
-                         <div class="caption">
-                             <p><b>John Samron</b>Lorem ipsum dolor storiesquiquam eius.
-                            <span class="hash-tag">#lifestyle</span></p>
-                         </div>
-                         <div class="comments text-muted">View all 15 comments</div>
-                    </div>
-                
-                    <div class="feed">
-                        <div class="head">
-                            
-                        </div>
-                         <div class="user">
-                             <div class="profile-pic">
-                                 <img src="images/profile-17.jpg" alt="">
-                             </div>
-                             <div class="info">
-                                 <h3>Kareena Joshua</h3>
-                                 <small>USA, 3 HOURS AGO</small>
-                             </div >
-                             <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                         </div>
-
-                         <div class="photo">
-                             <img src="images/feed-4.jpg" alt="">
-                         </div>
-
-                         <div class="action-button">
-                             <div class="interaction-button">
-                                 <span><i class="uil uil-thumbs-up"></i></span>
-                                 <span><i class="uil uil-comment"></i></span>
-                                 <span><i class="uil uil-share"></i></span>
-                             </div>
-                             <div class="bookmark">
-                                 <span><i class="uil uil-bookmark"></i></span>
-                             </div>
-                         </div>
-
-                         <div class="liked-by">
-                             <span><img src="images/profile-8.jpg"></span>
-                             <span><img src="images/profile-10.jpg"></span>
-                             <span><img src="images/profile-12.jpg"></span>
-                             ,<p>Liked by <b>Enrest Achiever</b>snd <b>280 others</b></p>
-                         </div>
-
-                         <div class="caption">
-                             <p><b>Kareena Joshua</b>Lorem ipsum dolor storiesquiquam eius.
-                            <span class="hash-tag">#lifestyle</span></p>
-                         </div>
-                         <div class="comments text-muted">View all 110 comments</div>
-                    </div>
-                
-                    <div class="feed">
-                        <div class="head">
-                            
-                        </div>
-                         <div class="user">
-                             <div class="profile-pic">
-                                 <img src="images/profile-18.jpg" alt="">
-                             </div>
-                             <div class="info">
-                                 <h3>Dan Smith</h3>
-                                 <small>Paris, 1 DAY AGO</small>
-                             </div >
-                             <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                         </div>
-
-                         <div class="photo">
-                             <img src="images/feed-5.jpg" alt="">
-                         </div>
-
-                         <div class="action-button">
-                             <div class="interaction-button">
-                                 <span><i class="uil uil-thumbs-up"></i></span>
-                                 <span><i class="uil uil-comment"></i></span>
-                                 <span><i class="uil uil-share"></i></span>
-                             </div>
-                             <div class="bookmark">
-                                 <span><i class="uil uil-bookmark"></i></span>
-                             </div>
-                         </div>
-
-                         <div class="liked-by">
-                             <span><img src="images/profile-9.jpg"></span>
-                             <span><img src="images/profile-11.jpg"></span>
-                             <span><img src="images/profile-13.jpg"></span>
-                             ,<p>Liked by <b>Enrest Achiever</b>snd <b>420 others</b></p>
-                         </div>
-
-                         <div class="caption">
-                             <p><b>Dan Smith</b>Lorem ipsum dolor storiesquiquam eius.
-                            <span class="hash-tag">#lifestyle</span></p>
-                         </div>
-                         <div class="comments text-muted">View all 120 comments</div>
-                    </div>
-                
+   
                     <div class="feed">
                         <div class="head">
                             
@@ -538,7 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
                 </div>
               </div>
               
-              <div class="right">
+              <!-- <div class="right">
                   <div class="messages">
                     <div class="heading">
                         <h4>Messages</h4>
@@ -612,7 +485,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post'])) {
                             <p class="text-bold">3 New Messages</p>
                         </div>
                     </div>                                                        
-                </div>
+                </div> -->
+
+
+
+                <!-- Button to send friend request -->
+<form method="post" action="">
+    <input type="hidden" name="friend_id" value="<?php echo $friendId; ?>">
+    <button type="submit" name="send_request">Send Friend Request</button>
+</form>
+
                 <div class="friend-requests">
                     <h4>Requests</h4>
                     <div class="request">

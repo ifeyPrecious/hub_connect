@@ -576,3 +576,8 @@ main .container .left .profle{
         display: none;
     }
 }
+
+.img_size{
+    height: 300px;
+    overflow: hidden;
+}
