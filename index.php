@@ -239,7 +239,7 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
 
                                 <div class="photo">   
 
-                                        <img src="<?php //echo $post['image']; 
+                                        <img src="<?php echo $post['image']; 
                                                     ?>" width="10" alt="Post Image">
                                 </div>
                                 <div class="action-button">
@@ -271,96 +271,7 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
                         <?php } ?>
                     <?php } ?>
 
-
-
-                    <div class="feed">
-                        <div class="head">
-
-                        </div>
-                        <div class="user">
-                            <div class="profile-pic">
-                                <img src="images/profile-19.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <h3>Karim Benzema</h3>
-                                <small>Mumbai, 30 MINUTES AGO</small>
-                            </div>
-                            <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                        </div>
-
-                        <div class="photo">
-                            <img src="images/feed-6.jpg" alt="">
-                        </div>
-
-                        <div class="action-button">
-                            <div class="interaction-button">
-                                <span><i class="uil uil-thumbs-up"></i></span>
-                                <span><i class="uil uil-comment"></i></span>
-                                <span><i class="uil uil-share"></i></span>
-                            </div>
-                            <div class="bookmark">
-                                <span><i class="uil uil-bookmark"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="liked-by">
-                            <span><img src="images/profile-15.jpg"></span>
-                            <span><img src="images/profile-14.jpg"></span>
-                            <span><img src="images/profile-17.jpg"></span>
-                            ,<p>Liked by <b>Enrest Achiever</b>snd <b>150 others</b></p>
-                        </div>
-
-                        <div class="caption">
-                            <p><b>Karim Benzema</b>Lorem ipsum dolor storiesquiquam eius.
-                                <span class="hash-tag">#lifestyle</span>
-                            </p>
-                        </div>
-                        <div class="comments text-muted">View all 30 comments</div>
-                    </div>
-                    <div class="feed">
-                        <div class="head">
-
-                        </div>
-                        <div class="user">
-                            <div class="profile-pic">
-                                <img src="images/profile-20.jpg" alt="">
-                            </div>
-                            <div class="info">
-                                <h3>Srishti Tirkey</h3>
-                                <small>Bangalore, 11 HOURS AGO</small>
-                            </div>
-                            <SPAN class="edit"><i class="uil uil-ellipsis-h"></i></SPAN>
-                        </div>
-
-                        <div class="photo">
-                            <img src="images/feed-7.jpg" alt="">
-                        </div>
-
-                        <div class="action-button">
-                            <div class="interaction-button">
-                                <span><i class="uil uil-thumbs-up"></i></span>
-                                <span><i class="uil uil-comment"></i></span>
-                                <span><i class="uil uil-share"></i></span>
-                            </div>
-                            <div class="bookmark">
-                                <span><i class="uil uil-bookmark"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="liked-by">
-                            <span><img src="images/profile-15.jpg"></span>
-                            <span><img src="images/profile-13.jpg"></span>
-                            <span><img src="images/profile-10.jpg"></span>
-                            ,<p>Liked by <b>Enrest Achiever</b>snd <b>530 others</b></p>
-                        </div>
-
-                        <div class="caption">
-                            <p><b>Srishti Tirkey</b>Lorem ipsum dolor storiesquiquam eius.
-                                <span class="hash-tag">#lifestyle</span>
-                            </p>
-                        </div>
-                        <div class="comments text-muted">View all 190 comments</div>
-                    </div>
+ 
                 </div>
             </div>
 
@@ -374,21 +285,10 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
 <h4>Requests</h4>
 
 <?php
-// $user_id =  $_SESSION['user_id'];
-// $stmt_select = $conn->prepare("SELECT * FROM users WHERE id != ? AND unique_id = ?");
-// $stmt_select->bind_param("i", $user_id);
-// $stmt_select->execute();
-// $result = $stmt_select->get_result();
- 
- 
+
 $user_id = $_SESSION['user_id'];
 
-// $stmt_get_unique_id = $conn->prepare("SELECT unique_id FROM users WHERE id = ?");
-// $stmt_get_unique_id->bind_param("i", $user_id);
-// $stmt_get_unique_id->execute();
-// $stmt_get_unique_id->bind_result($unique_id);
-// $stmt_get_unique_id->fetch();
-// $stmt_get_unique_id->close();
+ 
 
 $stmt_select = $conn->prepare("SELECT * FROM users WHERE id != ?");
 $stmt_select->bind_param("s", $user_id);
@@ -410,7 +310,7 @@ while ($user = $result->fetch_assoc()) {
 
         <?php
         // Check if a friend request exists between the current user and the user in the loop
-        $stmt_check_request = $conn->prepare("SELECT * FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)");
+        $stmt_check_request = $conn->prepare("SELECT * FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)");
         $stmt_check_request->bind_param("ssss", $user_id, $user['id'], $user['id'], $user_id);
         $stmt_check_request->execute();
         $result_check_request = $stmt_check_request->get_result();
@@ -423,7 +323,7 @@ while ($user = $result->fetch_assoc()) {
                 <button><a class="btn btn-primary py-5" href="friendRequest.php?friendid=<?php echo $user['id']; ?>">Cancel request</a></button>
                 <?php
             } elseif ($request['status'] == 'requested') {
-                ?>
+                ?> 
                 <button type="submit" class="btn btn-info" disabled>Friend</button>
                 <?php
             }
@@ -449,7 +349,12 @@ while ($user = $result->fetch_assoc()) {
 
 <?php
 // Select all friend requests where the receiver is the current user
-$stmt_select_requests = $conn->prepare("SELECT * FROM friend_requests WHERE receiver_id = ?");
+$stmt_select_requests = $conn->prepare("
+    SELECT friend_requests.*, users.username AS sender_username, users.user_image AS sender_user_image
+    FROM friend_requests
+    INNER JOIN users ON friend_requests.sender_id = users.id
+    WHERE friend_requests.receiver_id = ?
+");
 $stmt_select_requests->bind_param('s', $user_id);
 $stmt_select_requests->execute();
 $result_requests = $stmt_select_requests->get_result();
@@ -460,62 +365,27 @@ while ($request_row = $result_requests->fetch_assoc()) {
     <div class="request">
         <div class="info">
             <div class="profile-pic">
-                <img src="<?php echo $request_row['user_image']; ?>" alt="Profile Picture">
+                <img src="<?php echo $request_row['sender_user_image']; ?>" alt="Profile Picture">
             </div>
             <div>
-                <h5><?php echo $request_row['username']; ?></h5>
+                <h5><?php echo $request_row['sender_username']; ?></h5>
                 <p class="text-muted">8 mutual friends</p>
             </div>
         </div>
         <div class="action">
-            <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo $request_row['username']; ?>">Accept</a></button>
+            <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo $request_row['sender_username']; ?>">Accept</a></button>
             <button class="btn">Decline</button>
         </div>
     </div>
-<?php
+    <?php
 }
 $stmt_select_requests->close();
 ?>
 
-
-<!-- <div class="request">
-    <div class="info">
-        <div class="profile-pic">
-            <img src="images/profile-20.jpg">
-        </div>
-        <div>
-            <h5>Srishti Tirkey</h5>
-            <p class="text-muted">2 mutual friends</p>
-
-        </div>
-    </div>
-    <div class="action">
-        <button class="btn btn-primary">Accept</button>
-        <button class="btn">Decline</button>
-    </div>
-</div>
-<div class="request">
-    <div class="info">
-        <div class="profile-pic">
-            <img src="images/profile-5.jpg">
-        </div>
-        <div>
-            <h5>Christ Kahea</h5>
-            <p class="text-muted">1 mutual friend</p>
-
-        </div>
-    </div>
-    <div class="action">
-        <button class="btn btn-primary">Accept</button>
-        <button class="btn">Decline</button>
-    </div>
-</div> -->
  
 </div>
 
 </div>
-
-         
 
         </div>
 
