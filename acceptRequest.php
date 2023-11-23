@@ -1,10 +1,9 @@
-<?php 
-include('./server/connection.php');
+<?php
 session_start();
+include('./server/connection.php');
 
-
-// ======================= ACCEPT/REJECT FRIEND REQUEST ==============================
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['accept'])) {
+// ======================= ACCEPT FRIEND REQUEST ==============================
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['friendid'], $_GET['username'])) {
     $user_id = $_SESSION['user_id'];
     $sender_id = $_GET['friendid'];
     $username = $_GET['username'];
@@ -33,11 +32,16 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['accept'])) {
         if ($stmt_update_status->error) {
             echo "Error updating status: " . $stmt_update_status->error;
         } else {
-            header("location: index.php?accept=friend with {$username}");
+            // Redirect to index.php with the username as a parameter
+            header("location: index.php?accept=" . urlencode("friend with {$username}"));
+            exit(); // Important: Make sure to exit after sending the header
         }
 
         $stmt_update_status->close();
     }
 
     $stmt_accept_request->close();
+} else {
+    echo "Invalid request method or missing parameters.";
 }
+?>

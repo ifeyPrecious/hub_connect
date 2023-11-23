@@ -373,8 +373,11 @@ while ($request_row = $result_requests->fetch_assoc()) {
             </div>
         </div>
         <div class="action">
-            <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo $request_row['sender_username']; ?>">Accept</a></button>
-            <button class="btn">Decline</button>
+    <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo urlencode($request_row['sender_username']); ?>">Accept</a>
+</button>
+    <button class="btn">Decline</button>
+</div>
+
         </div>
     </div>
     <?php
