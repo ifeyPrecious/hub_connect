@@ -326,6 +326,10 @@ while ($user = $result->fetch_assoc()) {
                 ?> 
                 <button type="submit" class="btn btn-info" disabled>Friend</button>
                 <?php
+            } elseif ($request['status'] == 'accepted') {
+                ?>
+                <button type="submit" class="btn btn-success" disabled>Friends</button>
+                <?php
             }
         } else {
             // No friend request exists
@@ -333,6 +337,7 @@ while ($user = $result->fetch_assoc()) {
             <button><a class="btn btn-primary py-5" href="friendRequest.php?username=<?php echo $user['username']; ?>&friendid=<?php echo $user['id']; ?>">send request</a></button>
             <?php
         }
+        
 
         $stmt_check_request->close();
         ?>
