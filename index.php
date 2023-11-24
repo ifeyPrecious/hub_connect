@@ -154,6 +154,7 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
                         <h3>Settings</h3>
                     </a>
 
+                    
                     <label class="btn btn-primary" for="create-post">Create Post</label>
                 </div>
             </div>
@@ -310,7 +311,7 @@ while ($user = $result->fetch_assoc()) {
 
         <?php
         // Check if a friend request exists between the current user and the user in the loop
-        $stmt_check_request = $conn->prepare("SELECT * FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)");
+        $stmt_check_request = $conn->prepare("SELECT * FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ? )");
         $stmt_check_request->bind_param("ssss", $user_id, $user['id'], $user['id'], $user_id);
         $stmt_check_request->execute();
         $result_check_request = $stmt_check_request->get_result();
@@ -324,7 +325,7 @@ while ($user = $result->fetch_assoc()) {
                 <?php
             } elseif ($request['status'] == 'requested') {
                 ?> 
-                <button type="submit" class="btn btn-info" disabled>Friend</button>
+                <button><a class="btn btn-info">Cancel request </a> </button>
                 <?php
             } elseif ($request['status'] == 'accepted') {
                 ?>
@@ -360,6 +361,17 @@ $stmt_select_requests = $conn->prepare("
     INNER JOIN users ON friend_requests.sender_id = users.id
     WHERE friend_requests.receiver_id = ?
 ");
+
+// $stmt_select_requests = $conn->prepare("
+//     SELECT friend_requests.*, users.username AS sender_username, users.user_image AS sender_user_image
+//     FROM friend_requests
+//     INNER JOIN users ON friend_requests.sender_id = users.id
+//     WHERE friend_requests.receiver_id = ? AND friend_requests.status = 'requested'
+// ");
+
+
+
+
 $stmt_select_requests->bind_param('s', $user_id);
 $stmt_select_requests->execute();
 $result_requests = $stmt_select_requests->get_result();
@@ -380,15 +392,15 @@ while ($request_row = $result_requests->fetch_assoc()) {
         <div class="action">
         <?php
 // Assume $request_row is the row representing the friend request
-if ($request_row['status'] == 'pending') {
+if ($request_row['status'] == 'requested') {
     ?>
     <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo urlencode($request_row['sender_username']); ?>">Accept</a></button>
     <button><a href="declineRequest.php?decline=true&requestid=<?php echo $request_row['id']; ?>">Decline</a></button>
         </div>
     <?php
-} elseif ($request_row['status'] == 'requested') {
+} elseif ($request_row['status'] == 'pending') {
     ?>
-    <button type="submit" class="btn btn-info" disabled>Friends</button>
+    <button type="submit" class="btn btn-info">adddFriends</button>
     <button class="btn">Decline</button>
     <?php
 } elseif ($request_row['status'] == 'accepted') {

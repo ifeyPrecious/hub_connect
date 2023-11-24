@@ -7,6 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['friendid'], $_GET['usern
     $user_id = $_SESSION['user_id'];
     $sender_id = $_GET['friendid'];
     $username = $_GET['username'];
+    
 
     // Insert into friends table
     $stmt_accept_request = $conn->prepare("
