@@ -52,7 +52,7 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width= , initial-scale=1.0" />
-    <title>Chirag social</title>
+    <title>hubConnect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -378,9 +378,25 @@ while ($request_row = $result_requests->fetch_assoc()) {
             </div>
         </div>
         <div class="action">
-    <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo urlencode($request_row['sender_username']); ?>">Accept</a>
-</button>
+        <?php
+// Assume $request_row is the row representing the friend request
+if ($request_row['status'] == 'pending') {
+    ?>
+    <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo urlencode($request_row['sender_username']); ?>">Accept</a></button>
     <button class="btn">Decline</button>
+    <?php
+} elseif ($request_row['status'] == 'requested') {
+    ?>
+    <button type="submit" class="btn btn-info" disabled>Friends</button>
+    <button class="btn">Decline</button>
+    <?php
+} elseif ($request_row['status'] == 'accepted') {
+    ?>
+    <button type="submit" class="btn btn-success" disabled>Friends</button>
+    <?php
+}
+?>
+
 </div>
 
         </div>
