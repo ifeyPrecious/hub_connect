@@ -154,7 +154,6 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
                         <h3>Settings</h3>
                     </a>
 
-                    
                     <label class="btn btn-primary" for="create-post">Create Post</label>
                 </div>
             </div>
@@ -311,7 +310,7 @@ while ($user = $result->fetch_assoc()) {
 
         <?php
         // Check if a friend request exists between the current user and the user in the loop
-        $stmt_check_request = $conn->prepare("SELECT * FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ? )");
+        $stmt_check_request = $conn->prepare("SELECT * FROM friend_requests WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)");
         $stmt_check_request->bind_param("ssss", $user_id, $user['id'], $user['id'], $user_id);
         $stmt_check_request->execute();
         $result_check_request = $stmt_check_request->get_result();
