@@ -383,7 +383,8 @@ while ($request_row = $result_requests->fetch_assoc()) {
 if ($request_row['status'] == 'pending') {
     ?>
     <button><a class="btn btn-primary py-5" href="acceptRequest.php?friendid=<?php echo $request_row['sender_id']; ?>&username=<?php echo urlencode($request_row['sender_username']); ?>">Accept</a></button>
-    <button class="btn">Decline</button>
+    <button><a href="declineRequest.php?decline=true&requestid=<?php echo $request_row['id']; ?>">Decline</a></button>
+        </div>
     <?php
 } elseif ($request_row['status'] == 'requested') {
     ?>
