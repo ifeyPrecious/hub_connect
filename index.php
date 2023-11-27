@@ -1,4 +1,11 @@
 <?php
+
+
+if(!isset($_SESSION['logged_in'])){
+    header('location: login.php');
+    exit;
+}
+
 include('./server/connection.php');
 session_start();
 
@@ -73,15 +80,33 @@ $posts = $result->fetch_all(MYSQLI_ASSOC);
     <main>
         <div class="container">
             <div class="left">
+
+            <?php
+                $user_id = $_SESSION['user_id'];
+                $stmt_select = $conn->prepare("SELECT * FROM users WHERE id = ?");
+                         $stmt_select->bind_param("s", $user_id);
+                         $stmt_select->execute();
+                         $result = $stmt_select->get_result();
+                         
+                  while ($userprofile = $result->fetch_assoc()) { ?>
                 <a class="profile">
+
+              
                     <div class="profile-pic">
-                        <img src="./images/profile-8.jpg">
+                        <img src="<?php echo $userprofile['user_image']; ?>">
+                        
                     </div>
+
+                    
                     <div class="handle">
-                        <h4>HubConnect</h4>
+                    <h4><a href="profile.php?username=<?php echo urlencode($userprofile['username']); ?>&email=<?php echo urlencode($userprofile['email']); ?>">Your Profile</a></h4>
+
                         <p class="text-muted">HubConnect</p>
                     </div>
                 </a>
+                <?php } ?>
+
+                <!-- SIDEBAR====================== -->
                 <div class="sidebar">
                     <a class="menu-item active">
                         <span><i class="uil uil-home"></i></span>

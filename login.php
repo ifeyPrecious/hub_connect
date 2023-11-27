@@ -2,10 +2,10 @@
 
 <?php 
 
-// if(isset($_SESSION['logged_in'])){
-//     header('location: account.php');
-//     exit;
-// }
+if(isset($_SESSION['logged_in'])){
+    header('location: index.php');
+    exit;
+}
 
 if (isset($_POST['login'])) {
     // Sanitize user inputs
